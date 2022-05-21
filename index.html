@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TodoList</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <h1>TODO LIST</h1>
+    <ul>
+      <li v-for="(item, index) in todos">
+        <p>
+          {{ item }}
+          <button @click="deleteTodo(index)">削除</button>
+          <button @click="tryToEditTodo(index)">編集</button>
+        </p>
+      </li>
+    </ul>
+    <h2>新規作成する</h2>
+    <input v-model="addTemp">
+    <button @click="addTodo()">TODO LISTへ追加</button><br>
+    <h2>編集する</h2>
+    <input v-model="editTemp">
+    <button @click="editTodo()">更新</button>
+  </div>
+
+  <script>
+    new Vue({
+      el:"#app",
+      data: {
+        todos: [],
+        addTemp: null,
+        editTemp: null,
+        editIndex: null
+      },
+      mounted() {
+        if (localStorage.getItem('todos')) {
+          try {
+            this.todos = JSON.parse(localStorage.getItem('todos'));
+          } catch(e) {
+            localStorage.removeItem('todos');
+          }
+        }
+      },
+      methods: {
+        addTodo() {
+          this.todos.push(this.addTemp)
+          this.addTemp =''
+          this.saveTodo()
+        },
+        saveTodo(){
+          const parsed = JSON.stringify(this.todos);
+          localStorage.setItem('todos', parsed);
+        },
+        deleteTodo(index) {
+          this.todos.splice(index,1)
+          this.saveTodo()
+        },
+        tryToEditTodo(index) {
+          this.editTemp = this.todos[index]
+          this.editIndex = index
+        },
+        editTodo() {
+          this.todos.splice(this.editIndex, 1, this.editTemp)
+          this.editTemp =''
+          this.editIndex=''
+          this.saveTodo()
+        }
+      }
+    })
+  </script>
+</body>
+</html>
