@@ -12,7 +12,7 @@
   <div id="app">
     <h1>TODO LIST</h1>
     <ul>
-      <li v-for="(item, index) in todos">
+      <li v-for="(item, index) in todos" :key="index">
         <p>
           {{ item }}
           <button @click="deleteTodo(index)">削除</button>
@@ -21,54 +21,62 @@
       </li>
     </ul>
     <h2>新規作成する</h2>
-    <input v-model="addTemp">
+    <input v-model="addItem">
     <button @click="addTodo()">TODO LISTへ追加</button><br>
     <h2>編集する</h2>
-    <input v-model="editTemp">
+    <input v-model="editItem">
     <button @click="editTodo()">更新</button>
   </div>
 
   <script>
     new Vue({
-      el:"#app",
-      data: {
-        todos: [],
-        addTemp: null,
-        editTemp: null,
-        editIndex: null
+      el: '#app',
+      data: function () {
+        return {
+          todos: [],
+          addItem: '',
+          editItem: '',
+          editIndex: ''
+        }
       },
-      mounted() {
-        if (localStorage.getItem('todos')) {
-          try {
-            this.todos = JSON.parse(localStorage.getItem('todos'));
-          } catch(e) {
-            localStorage.removeItem('todos');
-          }
+      mounted () {
+        if (window.localStorage.getItem('todos')) {
+          this.todos = JSON.parse(window.localStorage.getItem('todos'))
         }
       },
       methods: {
-        addTodo() {
-          this.todos.push(this.addTemp)
-          this.addTemp =''
+        addTodo () {
+          if (this.addItem !== '') {
+            this.todos.push(this.addItem)
+            this.addItem = ''
+            this.saveTodo()
+          } else {
+            window.alert('空欄でTODO LISTへ追加はできません')
+          }
+        },
+        saveTodo () {
+          const stringfied = JSON.stringify(this.todos)
+          window.localStorage.setItem('todos', stringfied)
+        },
+        deleteTodo (index) {
+          this.todos.splice(index, 1)
           this.saveTodo()
+          this.editItem = ''
+          this.editIndex = ''
         },
-        saveTodo(){
-          const parsed = JSON.stringify(this.todos);
-          localStorage.setItem('todos', parsed);
-        },
-        deleteTodo(index) {
-          this.todos.splice(index,1)
-          this.saveTodo()
-        },
-        tryToEditTodo(index) {
-          this.editTemp = this.todos[index]
+        tryToEditTodo (index) {
+          this.editItem = this.todos[index]
           this.editIndex = index
         },
-        editTodo() {
-          this.todos.splice(this.editIndex, 1, this.editTemp)
-          this.editTemp =''
-          this.editIndex=''
-          this.saveTodo()
+        editTodo () {
+          if (this.editItem !== '') {
+            this.todos.splice(this.editIndex, 1, this.editItem)
+            this.editItem = ''
+            this.editIndex = ''
+            this.saveTodo()
+          } else {
+            window.alert('空欄で更新はできません')
+          }
         }
       }
     })
