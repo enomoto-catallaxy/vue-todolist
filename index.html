@@ -40,8 +40,8 @@
         }
       },
       mounted () {
-        if (window.localStorage.getItem('tests')) {
-          this.todos = JSON.parse(window.localStorage.getItem('tests'))
+        if (window.localStorage.getItem('todos')) {
+          this.todos = JSON.parse(window.localStorage.getItem('todos'))
         }
       },
       methods: {
@@ -64,7 +64,7 @@
         },
         saveTodo () {
           const stringfied = JSON.stringify(this.todos)
-          window.localStorage.setItem('tests', stringfied)
+          window.localStorage.setItem('todos', stringfied)
         },
         deleteTodo (id) {
           const index = this.todos.findIndex((elm) => elm.id === id)
