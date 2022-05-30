@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TodoList</title>
+  <title>test</title>
   <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 </head>
 
@@ -12,70 +12,89 @@
   <div id="app">
     <h1>TODO LIST</h1>
     <ul>
-      <li v-for="(item, index) in todos" :key="index">
+      <li v-for="todo in todos" :key="todo.id">
         <p>
-          {{ item }}
-          <button @click="deleteTodo(index)">削除</button>
-          <button @click="tryToEditTodo(index)">編集</button>
+          {{ todo.text }}
+          <button @click="deleteTodo(todo.id)">削除</button>
+          <button @click="tryToEditTodo(todo.id)">編集</button>
         </p>
       </li>
     </ul>
     <h2>新規作成する</h2>
-    <input v-model="addItem">
+    <input v-model="addText">
     <button @click="addTodo()">TODO LISTへ追加</button><br>
     <h2>編集する</h2>
-    <input v-model="editItem">
+    <input v-model="editText">
     <button @click="editTodo()">更新</button>
   </div>
 
   <script>
     new Vue({
-      el: '#app',
+      el:"#app",
       data: function () {
         return {
-          todos: [],
-          addItem: '',
-          editItem: '',
-          editIndex: ''
+          todos:[],
+          addText:'',
+          editId: '',
+          editText: ''
         }
       },
-      mounted () {
-        if (window.localStorage.getItem('todos')) {
-          this.todos = JSON.parse(window.localStorage.getItem('todos'))
+      mounted() {
+        if (localStorage.getItem('tests')) {
+          if(this.todos)
+          this.todos = JSON.parse(localStorage.getItem('tests'));
         }
       },
       methods: {
-        addTodo () {
-          if (this.addItem !== '') {
-            this.todos.push(this.addItem)
-            this.addItem = ''
-            this.saveTodo()
+        getMaxId() {
+          if (this.todos.length !== 0){
+            const ids = this.todos.map(item => item['id'])
+            return Math.max(...ids)
           } else {
-            window.alert('空欄でTODO LISTへ追加はできません')
+            return 0
           }
         },
-        saveTodo () {
-          const stringfied = JSON.stringify(this.todos)
-          window.localStorage.setItem('todos', stringfied)
-        },
-        deleteTodo (index) {
-          this.todos.splice(index, 1)
-          this.saveTodo()
-          this.editItem = ''
-          this.editIndex = ''
-        },
-        tryToEditTodo (index) {
-          this.editItem = this.todos[index]
-          this.editIndex = index
-        },
-        editTodo () {
-          if (this.editItem !== '') {
-            this.todos.splice(this.editIndex, 1, this.editItem)
-            this.editItem = ''
-            this.editIndex = ''
+        addTodo() {
+          if(this.addText !==''){
+            this.todos.push({ text: this.addText, id: this.getMaxId() + 1 } )
+
+            console.log(this.getMaxId()) 
+            console.log(this.todos.map(item => item['id']))
+
+            this.addText =''
             this.saveTodo()
-          } else {
-            window.alert('空欄で更新はできません')
+          }
+          else{
+            alert('空欄でTODO LISTへ追加はできません')
+          }
+        },
+        saveTodo(){
+          const stringfied = JSON.stringify(this.todos);
+          localStorage.setItem('tests', stringfied);
+        },
+        deleteTodo(id) {
+          let index = this.todos.findIndex((elm) => elm.id === id)
+          this.todos.splice(index, 1)
+          this.editText =''
+          this.editId=''
+          this.saveTodo()
+        },
+        tryToEditTodo(id) {
+          let index = this.todos.findIndex((elm) => elm.id === id)
+          this.editText = this.todos[index].text
+          this.editId = id
+          this.todos[index]
+        },
+        editTodo() {
+          if(this.editText !==''){
+            let element = this.todos.find((elm)=>elm.id === this.editId)
+            element.text = this.editText
+            this.editText =''
+            this.editId=''
+            this.saveTodo()
+          }
+          else{
+            alert('空欄で更新はできません')
           }
         }
       }
