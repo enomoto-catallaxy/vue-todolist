@@ -30,71 +30,63 @@
 
   <script>
     new Vue({
-      el:"#app",
+      el: '#app',
       data: function () {
         return {
-          todos:[],
-          addText:'',
+          todos: [],
+          addText: '',
           editId: '',
           editText: ''
         }
       },
-      mounted() {
-        if (localStorage.getItem('tests')) {
-          if(this.todos)
-          this.todos = JSON.parse(localStorage.getItem('tests'));
+      mounted () {
+        if (window.localStorage.getItem('tests')) {
+          this.todos = JSON.parse(window.localStorage.getItem('tests'))
         }
       },
       methods: {
-        getMaxId() {
-          if (this.todos.length !== 0){
-            const ids = this.todos.map(item => item['id'])
+        getMaxId () {
+          if (this.todos.length !== 0) {
+            const ids = this.todos.map(item => item.id)
             return Math.max(...ids)
           } else {
             return 0
           }
         },
-        addTodo() {
-          if(this.addText !==''){
-            this.todos.push({ text: this.addText, id: this.getMaxId() + 1 } )
-
-            console.log(this.getMaxId()) 
-            console.log(this.todos.map(item => item['id']))
-
-            this.addText =''
+        addTodo () {
+          if (this.addText !== '') {
+            this.todos.push({ text: this.addText, id: this.getMaxId() + 1 })
+            this.addText = ''
             this.saveTodo()
-          }
-          else{
-            alert('空欄でTODO LISTへ追加はできません')
+          } else {
+            window.alert('空欄でTODO LISTへ追加はできません')
           }
         },
-        saveTodo(){
-          const stringfied = JSON.stringify(this.todos);
-          localStorage.setItem('tests', stringfied);
+        saveTodo () {
+          const stringfied = JSON.stringify(this.todos)
+          window.localStorage.setItem('tests', stringfied)
         },
-        deleteTodo(id) {
-          let index = this.todos.findIndex((elm) => elm.id === id)
+        deleteTodo (id) {
+          const index = this.todos.findIndex((elm) => elm.id === id)
           this.todos.splice(index, 1)
-          this.editText =''
-          this.editId=''
+          this.editText = ''
+          this.editId = ''
           this.saveTodo()
         },
-        tryToEditTodo(id) {
-          let index = this.todos.findIndex((elm) => elm.id === id)
+        tryToEditTodo (id) {
+          const index = this.todos.findIndex((elm) => elm.id === id)
           this.editText = this.todos[index].text
           this.editId = id
-          this.todos[index]
         },
-        editTodo() {
-          if(this.editText !==''){
-            let element = this.todos.find((elm)=>elm.id === this.editId)
+        editTodo () {
+          if (this.editText !== '') {
+            const element = this.todos.find((elm) => elm.id === this.editId)
             element.text = this.editText
-            this.editText =''
-            this.editId=''
+            this.editText = ''
+            this.editId = ''
             this.saveTodo()
-          }
-          else{
-            alert('空欄で更新はできません')
+          } else {
+            window.alert('空欄で更新はできません')
           }
         }
       }
