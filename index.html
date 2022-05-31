@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>test</title>
+  <title>TODO LIST</title>
   <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 </head>
 
@@ -20,23 +20,29 @@
         </p>
       </li>
     </ul>
-    <h2>新規作成する</h2>
-    <input v-model="addText">
-    <button @click="addTodo()">TODO LISTへ追加</button><br>
-    <h2>編集する</h2>
-    <input v-model="editText">
-    <button @click="editTodo()">更新</button>
+    
+    <div v-if="whetherToEdit">
+      <h2>編集する</h2>
+      <input v-model="editText">
+      <button @click="editTodo()">更新</button>
+    </div>
+    <div v-else>
+      <h2>新規作成する</h2>
+      <input v-model="addText">
+      <button @click="addTodo()">TODO LISTへ追加</button><br>
+    </div>
   </div>
 
   <script>
     new Vue({
       el: '#app',
-      data: function () {
+      data () {
         return {
           todos: [],
           addText: '',
           editId: '',
-          editText: ''
+          editText: '',
+          whetherToEdit: false
         }
       },
       mounted () {
@@ -47,7 +53,7 @@
       methods: {
         getMaxId () {
           if (this.todos.length !== 0) {
-            const ids = this.todos.map(item => item.id)
+            const ids = this.todos.map(todo => todo.id)
             return Math.max(...ids)
           } else {
             return 0
@@ -57,14 +63,17 @@
           if (this.addText !== '') {
             this.todos.push({ text: this.addText, id: this.getMaxId() + 1 })
             this.addText = ''
+            this.editId = ''
+            this.editText = ''
             this.saveTodo()
           } else {
             window.alert('空欄でTODO LISTへ追加はできません')
           }
         },
         saveTodo () {
-          const stringfied = JSON.stringify(this.todos)
-          window.localStorage.setItem('todos', stringfied)
+          const stringified = JSON.stringify(this.todos)
+          window.localStorage.setItem('todos', stringified)
+          this.whetherToEdit = false
         },
         deleteTodo (id) {
           const index = this.todos.findIndex((elm) => elm.id === id)
@@ -74,9 +83,10 @@
           this.saveTodo()
         },
         tryToEditTodo (id) {
-          const index = this.todos.findIndex((elm) => elm.id === id)
-          this.editText = this.todos[index].text
+          const todo = this.todos.find((todo) => todo.id === id)
+          this.editText = todo.text
           this.editId = id
+          this.whetherToEdit = true
         },
         editTodo () {
           if (this.editText !== '') {
