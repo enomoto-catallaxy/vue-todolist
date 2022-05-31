@@ -62,9 +62,6 @@
         addTodo () {
           if (this.addText !== '') {
             this.todos.push({ text: this.addText, id: this.getMaxId() + 1 })
-            this.addText = ''
-            this.editId = ''
-            this.editText = ''
             this.saveTodo()
           } else {
             window.alert('空欄でTODO LISTへ追加はできません')
@@ -74,12 +71,13 @@
           const stringified = JSON.stringify(this.todos)
           window.localStorage.setItem('todos', stringified)
           this.whetherToEdit = false
-        },
-        deleteTodo (id) {
-          const index = this.todos.findIndex((elm) => elm.id === id)
-          this.todos.splice(index, 1)
           this.editText = ''
           this.editId = ''
+          this.addText = ''
+        },
+        deleteTodo (id) {
+          const index = this.todos.findIndex((todo) => todo.id === id)
+          this.todos.splice(index, 1)
           this.saveTodo()
         },
         tryToEditTodo (id) {
@@ -90,10 +88,8 @@
         },
         editTodo () {
           if (this.editText !== '') {
-            const element = this.todos.find((elm) => elm.id === this.editId)
-            element.text = this.editText
-            this.editText = ''
-            this.editId = ''
+            const todo = this.todos.find((todo) => todo.id === this.editId)
+            todo.text = this.editText
             this.saveTodo()
           } else {
             window.alert('空欄で更新はできません')
